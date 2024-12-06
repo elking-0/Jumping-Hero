@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jumping Hero</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #87CEEB;
+    }
+    canvas {
+      display: block;
+      background-color: #00BFFF;
+    }
+    .score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+<div class="score">Score: <span id="score">0</span></div>
+
+<script>
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const gameWidth = canvas.width;
+  const gameHeight = canvas.height;
+
+  let score = 0;
+  let isGameOver = false;
+
+  // Character properties
+  const hero = {
+    x: 100,
+    y: gameHeight - 150,
+    width: 50,
+    height: 50,
+    color: '#FF5722',
+    dy: 0,
+    gravity: 0.8,
+    jumpStrength: -15,
+    isJumping: false
+  };
+
+  // Ground properties
+  const groundHeight = 50;
+
+  // Enemy properties
+  const enemies = [];
+  const enemySpeed = 6;
+
+  // Generate enemies at intervals
+  function spawnEnemy() {
+    if (!isGameOver) {
+      enemies.push({
+        x: gameWidth,
+        y: gameHeight - groundHeight - 50,
+        width: 50,
+        height: 50,
+        color: '#FF0000'
+      });
+      setTimeout(spawnEnemy, 1500 - score * 10);
+    }
+  }
+
+  // Draw hero
+  function drawHero() {
+    ctx.fillStyle = hero.color;
+    ctx.fillRect(hero.x, hero.y, hero.width, hero.height);
+  }
+
+  // Draw ground
+  function drawGround() {
+    ctx.fillStyle = '#006400';
+    ctx.fillRect(0, gameHeight - groundHeight, gameWidth, groundHeight);
+  }
+
+  // Draw enemies
+  function drawEnemies() {
+    enemies.forEach((enemy) => {
+      ctx.fillStyle = enemy.color;
+      ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+    });
+  }
+
+  // Update hero
+  function updateHero() {
+    hero.dy += hero.gravity;
+    hero.y += hero.dy;
+
+    // Prevent hero from falling below ground
+    if (hero.y + hero.height >= gameHeight - groundHeight) {
+      hero.y = gameHeight - groundHeight - hero.height;
+      hero.isJumping = false;
+    }
+  }
+
+  // Update enemies
+  function updateEnemies() {
+    enemies.forEach((enemy) => {
+      enemy.x -= enemySpeed;
+
+      // Check collision
+      if (
+        hero.x < enemy.x + enemy.width &&
+        hero.x + hero.width > enemy.x &&
+        hero.y < enemy.y + enemy.height &&
+        hero.y + hero.height > enemy.y
+      ) {
+        gameOver();
+      }
+    });
+
+    // Remove enemies that go off-screen
+    enemies = enemies.filter((enemy) => enemy.x + enemy.width > 0);
+  }
+
+  // Update score
+  function updateScore() {
+    score++;
+    document.getElementById('score').innerText = score;
+  }
+
+  // Game over function
+  function gameOver() {
+    isGameOver = true;
+    alert(`Game Over! Final Score: ${score}`);
+    document.location.reload();
+  }
+
+  // Jump function
+  function jump() {
+    if (!hero.isJumping) {
+      hero.dy = hero.jumpStrength;
+      hero.isJumping = true;
+    }
+  }
+
+  // Game loop
+  function gameLoop() {
+    if (!isGameOver) {
+      ctx.clearRect(0, 0, gameWidth, gameHeight);
+
+      drawGround();
+      drawHero();
+      drawEnemies();
+
+      updateHero();
+      updateEnemies();
+      updateScore();
+
+      requestAnimationFrame(gameLoop);
+    }
+  }
+
+  // Event listener for jumping
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      jump();
+    }
+  });
+
+  // Start the game
+  spawnEnemy();
+  gameLoop();
+</script>
+
+</body>
+</html>und();
+    drawHero();
+    drawEnemies();
+    requestAnimationFrame(update);
+  }
+
+  // Listen to key events
+  window.addEventListener('keydown', function(e) {
+    if (e.key === ' ') {
+      jumpKey = true;
+    }
+  });
+
+  window.addEventListener('keyup', function(e) {
+    if (e.key === ' ') {
+      jumpKey = false;
+    }
+  });
+
+  update();
+</script>
+
+</body>
+</html>
