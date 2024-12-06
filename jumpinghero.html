@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subway Surfer Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #87ceeb;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            bottom: 0;
+            left: 50vw;
+            transition: left 0.1s;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+            color: white;
+        }
+
+        #obstacle {
+            width: 50px;
+            height: 50px;
+            background-color: black;
+            position: absolute;
+            top: 0;
+            left: 100vw;
+            animation: moveObstacle 2s linear infinite;
+        }
+
+        @keyframes moveObstacle {
+            0% {
+                left: 100vw;
+            }
+            100% {
+                left: -50px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="player"></div>
+        <div id="score">Score: 0</div>
+        <div id="obstacle"></div>
+    </div>
+
+    <script>
+        let player = document.getElementById("player");
+        let scoreDisplay = document.getElementById("score");
+        let score = 0;
+        let obstacle = document.getElementById("obstacle");
+        let gameContainer = document.getElementById("game-container");
+
+        let playerPosition = 50; // Start at the middle of the screen
+        let speed = 5;
+
+        // Keyboard input for player movement
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "ArrowLeft" && playerPosition > 0) {
+                playerPosition -= speed;
+            }
+            if (e.key === "ArrowRight" && playerPosition < 100) {
+                playerPosition += speed;
+            }
+
+            player.style.left = playerPosition + "vw";
+        });
+
+        // Collision detection function
+        function checkCollision() {
+            let playerRect = player.getBoundingClientRect();
+            let obstacleRect = obstacle.getBoundingClientRect();
+
+            if (playerRect.right > obstacleRect.left && playerRect.left < obstacleRect.right &&
+                playerRect.bottom > obstacleRect.top && playerRect.top < obstacleRect.bottom) {
+                alert("Game Over!");
+                resetGame();
+            }
+        }
+
+        // Reset game function
+        function resetGame() {
+            score = 0;
+            scoreDisplay.textContent = "Score: " + score;
+            player.style.left = "50vw";
+            obstacle.style.animation = "moveObstacle 2s linear infinite";
+        }
+
+        // Update score function
+        function updateScore() {
+            score++;
+            scoreDisplay.textContent = "Score: " + score;
+        }
+
+        // Game loop
+        setInterval(function() {
+            checkCollision();
+            updateScore();
+        }, 100);
+    </script>
+</body>
+</html>
